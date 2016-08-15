@@ -1,0 +1,85 @@
+<apex:page standardController="lead">
+
+<apex:includeScript value="//ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"/>
+
+<script>
+    j$ = jQuery.noConflict();
+
+    function populateLatLong() {
+    
+         // Make https Ajax Request
+         j$.ajax({
+            url: "https://api.zippopotam.us/us/" + j$('[id*=zipCode]').val(),
+            cache: false,
+            dataType: "json",
+            type: "GET",
+            success: function(result, success) {
+              var places = result['places'][0];
+              var vlatitude = places['latitude'];
+              var vlongitude = places['longitude'];
+              
+              console.log('latitude: ' + vlatitude);
+              console.log('longitude: ' + vlongitude);
+                      
+              j$('[id*=latitude]').val(vlatitude);
+              j$('[id*=longitude]').val(vlongitude);
+
+            },
+            error: function(result, success) {
+              alert ( 'ajax error' );
+            }
+          });   
+            
+    }
+    
+    j$(document).ready(function() {
+    
+         populateLatLong();
+
+    });
+</script>
+
+<div class="LeadAssessmentOneVisualForce">
+   <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">New Lead</h3>
+      </div>
+      <div class="panel-body">
+        <apex:form >
+            <div class="form-group">
+                <label for="FirstName">First Name</label>
+                <apex:inputField value="{!lead.FirstName }" styleClass="form-control" id="firstName"/>
+            </div>       
+            <div class="form-group">
+                <label for="LastName">Last Name</label>
+                <apex:inputField value="{!lead.LastName }" styleClass="form-control"/>
+            </div>
+            <div class="form-group">
+                <label for="Company">Company</label>
+                <apex:inputField value="{!lead.Company }" styleClass="form-control"/>
+            </div>
+            <div class="form-group">
+                <label for="LeadStatus">Lead Status</label>
+                <apex:inputField value="{!lead.Status }" styleClass="form-control"/>
+            </div>
+            <div class="form-group">
+                <label for="BusinessDevelopmentRep">Business Development Rep</label>
+                <apex:inputField value="{!lead.BusinessDevelopmentRep__c }" styleClass="form-control"/>
+            </div>
+            <div class="form-group">
+                <label for="Address">Zip/Postal Code</label>
+                <apex:inputField value="{!lead.PostalCode }" styleClass="form-control" id="zipCode"/>
+            </div>           
+            <br></br>
+            <div class="form-group">
+                <label for="Company">Latitude</label>
+                <apex:inputField value="{!lead.Latitude__c }" styleClass="form-control" id="latitude"/>
+                <label for="Company">Longitude</label>
+                <apex:inputField value="{!lead.Longitude__c }" styleClass="form-control" id="longitude"/>
+            </div>
+            <apex:commandButton action="{!save}" value="Save" onclick="javascript: displayTest();"/>
+        </apex:form>
+       </div>
+    </div>
+</div>
+</apex:page>
